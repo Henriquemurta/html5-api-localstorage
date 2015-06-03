@@ -10,6 +10,7 @@ var ListController = {
 		form.addEventListener('submit', function(event) {
 			ListController.addContact(form);
 			ListController.clearForm(form);
+			//to avoid page refresh/reload
 			event.preventDefault();
 		});
 	},
@@ -39,7 +40,7 @@ var ListController = {
 			section = document.getElementById('guestList'),
 			dl = document.createElement('dl'),
 			dt = ListController.createDT(contact),
-			ddName = ListController.createDDName(contact.name, 'name'),
+			ddName = ListController.createDDName(contact),
 			ddEmail = ListController.createDD(contact.email, 'email');
 		
 		dl.appendChild(dt);
@@ -75,14 +76,26 @@ var ListController = {
 		return dd;
 	},
 	
-	createDDName: function(value, className) {
+	createDDName: function(contact) {
 		var 
-			dd = ListController.createDD(value, className);
+			dd = ListController.createDD(contact.name, 'name');
 		  img = ListController.createImage('images/delete.gif');
+		
+		img.setAttribute('data-email', contact.email);
+		img.addEventListener('click', function() {
+			ListController.removeContact(this);
+		});
 		
 		dd.appendChild(img);
 		
 		return dd;
+	},
+	
+	removeContact: function(image) {
+		if(ContactListService.remove(image.dataset.email)) {
+			var dl = image.parentNode.parentNode;
+			dl.parentNode.removeChild(dl);
+		}
 	}
 
 };
